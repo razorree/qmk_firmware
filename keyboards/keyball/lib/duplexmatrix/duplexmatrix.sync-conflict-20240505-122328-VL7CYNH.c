@@ -86,7 +86,7 @@ static void duplex_scan_raw(matrix_row_t out_matrix[]) {
     duplex_scan_raw_post_kb(out_matrix);
 }
 
-bool matrix_scan_custom(matrix_row_t current_matrix[]) {
+static bool matrix_scan_custom(matrix_row_t current_matrix[]) {
     bool         changed = false;
     matrix_row_t tmp[MATRIX_ROWS] = {0};
 
@@ -103,4 +103,17 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
 void matrix_init_custom(void) {
     set_pins_input(col_pins, PINNUM_COL);
     set_pins_input(row_pins, PINNUM_ROW);
+}
+
+// declare matrix buffers which defined in quantum/matrix_common.c
+extern matrix_row_t raw_matrix[MATRIX_ROWS];
+extern matrix_row_t matrix[MATRIX_ROWS];
+
+uint8_t matrix_scan(void) {
+    bool changed = duplex_scan(raw_matrix);
+
+    debounce(raw_matrix, matrix + thisHand, ROWS_PER_HAND, changed);
+
+    matrix_scan_kb();
+    return changed;
 }
