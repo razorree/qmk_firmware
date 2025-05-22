@@ -159,8 +159,8 @@ typedef struct {
     keyball_motion_t this_motion;
     keyball_motion_t that_motion;
 
-    uint8_t cpi_value;
-    bool    cpi_changed;
+    uint16_t cpi_value;
+    bool     cpi_changed;
 
     bool     scroll_mode;
     uint32_t scroll_mode_changed;
@@ -259,7 +259,7 @@ void keyball_set_scroll_div(uint8_t div);
 /// The actual CPI value is the returned value +1 and multiplied by 100:
 ///
 ///     CPI = (v + 1) * 100
-uint8_t keyball_get_cpi(void);
+uint16_t keyball_get_cpi(void);
 
 /// keyball_set_cpi changes CPI of trackball.
 /// Valid values are between 0 to 119, and the actual CPI value is the set
@@ -269,4 +269,4 @@ uint8_t keyball_get_cpi(void);
 ///
 /// In addition, if you do not upload SROM, the maximum value will be limited
 /// to 34 (3500CPI).
-void keyball_set_cpi(uint8_t cpi);
+void keyball_set_cpi(uint16_t cpi);

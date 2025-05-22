@@ -57,7 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    ifndef RGBLIGHT_SAT_STEP
 #        define RGBLIGHT_SAT_STEP   17
 #    endif
-#    define RGBLIGHT_DEFAULT_MODE RGBLIGHT_MODE_RAINBOW_SWIRL
+#    define RGBLIGHT_DEFAULT_MODE 6 // set the rainbow mode
 #endif
 #ifdef RGB_MATRIX_ENABLE
 #    define RGB_MATRIX_SPLIT    { 37, 37 }
@@ -77,6 +77,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPI_SCK_PIN GP22
 #define SPI_MISO_PIN GP20
 #define SPI_MOSI_PIN GP23
+
+#define PMW33XX_CS_PIN GP21
+
+#define POINTING_DEVICE_ROTATION_90
+#define POINTING_DEVICE_INVERT_Y
 
 // To squeeze firmware size
 // #undef LOCKING_SUPPORT_ENABLE

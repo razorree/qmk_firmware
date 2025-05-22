@@ -58,4 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD
 
 
-//#define POINTING_DEVICE_DEBUG
+#define POINTING_DEVICE_DEBUG
+
+#define MOUSE_EXTENDED_REPORT

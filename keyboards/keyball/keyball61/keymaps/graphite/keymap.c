@@ -115,9 +115,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 void keyboard_post_init_user(void) {
     // Customise these values to desired behaviour
-    // debug_enable=true;
-    // debug_keyboard=true;
-    // debug_mouse=true;
+    debug_enable=true;
+    debug_keyboard=true;
+    debug_mouse=true;
 
         set_auto_mouse_layer(2); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>
         set_auto_mouse_enable(true);
