@@ -25,9 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-const uint16_t CPI_STEP       = PMW33XX_CPI_STEP
-const uint16_t CPI_DEFAULT    = KEYBALL_CPI_DEFAULT / 100;
-const uint16_t CPI_MAX        = PMW33XX_CPI_MAX;
+const uint16_t CPI_STEP       = PMW33XX_CPI_STEP;
+const uint16_t CPI_DEFAULT    = KEYBALL_CPI_DEFAULT;
 const uint8_t  SCROLL_DIV_MAX = 7;
 
 const uint16_t AML_TIMEOUT_MIN = 100;
@@ -456,7 +455,7 @@ void keyball_oled_render_ballinfo(void) {
 
     // 2nd line, empty label and CPI
     oled_write_P(PSTR("    \xB1\xBC\xBD"), false);
-    oled_write(format_4d(keyball_get_cpi()) + 1, false);
+    oled_write(format_4d((keyball_get_cpi()+1)/100), false);
     oled_write_P(PSTR("00 "), false);
 
     // indicate scroll snap mode: "VT" (vertical), "HN" (horiozntal), and "SCR" (free)
@@ -600,13 +599,11 @@ uint16_t keyball_get_cpi(void) {
 }
 
 void keyball_set_cpi(uint16_t cpi) {
-    if (cpi > CPI_MAX) {
-        cpi = CPI_MAX;
-    }
     keyball.cpi_value   = cpi;
     keyball.cpi_changed = true;
     if (keyball.this_have_ball) {
-        pmw33xx_set_cpi_wrapper(cpi == 0 ? CPI_DEFAULT - 1 : cpi - 1);
+        pmw33xx_set_cpi_wrapper(cpi == 0 ? CPI_DEFAULT : cpi);
+        keyball.cpi_value = pmw33xx_get_cpi_wrapper();
     }
 }
 
@@ -748,16 +745,16 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
             } break;
 
             case CPI_I100:
-                add_cpi(100);
+                add_cpi(CPI_STEP);
                 break;
             case CPI_D100:
-                add_cpi(-100);
+                add_cpi(-CPI_STEP);
                 break;
             case CPI_I1K:
-                add_cpi(1000);
+                add_cpi(CPI_STEP*10);
                 break;
             case CPI_D1K:
-                add_cpi(-1000);
+                add_cpi(-CPI_STEP*10);
                 break;
 
             case SCRL_TO:
