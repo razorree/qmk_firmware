@@ -1,10 +1,3 @@
-# MCU name
-# MCU = atmega32u4
-# Bootloader selection
-#BOOTLOADER = caterina
-
-# Link Time Optimization required for size.
-LTO_ENABLE = yes
 
 # Build Options
 CONSOLE_ENABLE = no         # Console for debug
