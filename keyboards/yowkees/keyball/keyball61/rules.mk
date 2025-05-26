@@ -18,7 +18,7 @@ AUDIO_ENABLE = no           # Audio output
 
 # Duplex matrix.
 CUSTOM_MATRIX = lite
-SRC += lib/duplexmatrix/duplexmatrix.c
+SRC += lib/matrix.c
 
 # Keyball61 is split keyboard.
 SPLIT_KEYBOARD = yes

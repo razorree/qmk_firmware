@@ -19,10 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef SPLIT_KEYBOARD
 #    include "transactions.h"
 #endif
-
 #include "keyball.h"
-//#include "drivers/pmw3360/pmw3360.h"
-
 #include <string.h>
 
 #ifdef POINTING_DEVICE_ENABLE
@@ -643,7 +640,7 @@ void keyboard_post_init_kb(void) {
  #ifdef POINTING_DEVICE_ENABLE
 
 void housekeeping_task_kb(void) {
-    if (is_keyboard_master() && 1 ==2) {
+    if (is_keyboard_master() && 1 == 2) {
         rpc_get_info_invoke();
         if (keyball.that_have_ball) {
             rpc_get_motion_invoke();
