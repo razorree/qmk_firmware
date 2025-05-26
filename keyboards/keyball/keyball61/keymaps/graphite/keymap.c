@@ -20,6 +20,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+#ifdef MACCEL_ENABLE
+    #include "maccel/maccel.h"
+#endif
+
+enum my_keycodes {
+    MA_TOGGLE = QK_USER,    // toggle mouse acceleration
+    MA_TAKEOFF,   // mouse acceleration curve takeoff (initial acceleration) step key
+    MA_GROWTH_RATE,         // mouse acceleration curve growth rate step key
+    MA_OFFSET,              // mouse acceleration curve offset step key
+    MA_LIMIT,               // mouse acceleration curve limit step key
+};
+
 /////////////////////////////////////////// tap-dance
 
 //Tap Dance declarations
@@ -70,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     SSNP_FRE , KC_F1    , KC_F2 ,    KC_F3    , KC_F4    , KC_F5    ,                                    KC_F6    ,   KC_F7,      KC_F8,      KC_F9 ,     KC_F10,     KC_F11   ,
     SSNP_VRT , _______  , KC_7     , KC_8     , KC_9     , _______  ,                                  KC_PGUP,     KC_HOME,    KC_UP,      KC_END,     KC_INS,     KC_F12,
     SSNP_HOR , _______  , KC_4     , KC_5     , KC_6     ,S(KC_SCLN),                                  KC_PGDN,     KC_LEFT,    KC_DOWN,    KC_RGHT,    KC_DEL,     XXXXXXX,
-    _______  , _______  , KC_BTN1  , KC_BTN3  , KC_BTN2  ,S(KC_MINS), S(KC_8)  ,            S(KC_9)  , KC_PGDN  ,   KC_BTN1  ,  _______  ,  KC_BTN2  ,  KC_BTN3  ,  _______  ,
+    _______  , _______  , KC_BTN1  , KC_BTN3  , KC_BTN2  ,S(KC_MINS), S(KC_8)  ,            S(KC_9)  , KC_PGDN  ,   C(KC_LEFT), _______ ,   C(KC_RGHT), KC_BTN3  ,  _______  ,
     _______  , _______  , _______  , _______  , _______  , _______  , _______  ,             KC_DEL  , _______  ,   _______  ,  _______  ,  _______  ,  _______  ,  _______
   ),
 
@@ -78,8 +90,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     RGB_TOG  , AML_TO   , AML_I50  , AML_D50  , _______  , _______  ,                                  RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN , RGB_M_K  ,
     RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  , _______  , _______  ,                                  RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , _______  , _______  ,
     RGB_RMOD , RGB_HUD  , RGB_SAD  , RGB_VAD  , _______  , _______  ,                                  CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE , KBC_RST  ,
-    _______  , _______  , SCRL_DVD , SCRL_DVI , SCRL_MO  , SCRL_TO  , EE_CLR   ,            EE_CLR   , KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , _______  , _______  ,
-    QK_BOOT  , _______  , _______  , _______  , _______  , _______  , _______  ,            _______  , KC_BSPC  , _______  , _______  , _______  , _______  , _______
+    _______  , _______  , SCRL_DVD , SCRL_DVI , SCRL_MO  , SCRL_TO  , EE_CLR   ,            _______  , MA_TOGGLE,MA_TAKEOFF,MA_GROWTH_RATE,MA_OFFSET,MA_LIMIT,_______  ,
+    QK_BOOT  , _______  , _______  , _______  , _______  , _______  , _______  ,            KC_LSFT  , KC_BSPC  , _______  , _______  , _______  , _______  , _______
   ),
 };
 // clang-format on
@@ -124,4 +136,16 @@ void keyboard_post_init_user(void) {
 
 }
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (!process_record_maccel(keycode, record, MA_TOGGLE, MA_TAKEOFF, MA_GROWTH_RATE, MA_OFFSET, MA_LIMIT)) {
+        return false;
+    }
+    /* insert your own macros here */
+    return true;
+}
 
+report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+ //   #ifdef MACCEL_ENABLE
+        return pointing_device_task_maccel(mouse_report);
+//    #endif
+}

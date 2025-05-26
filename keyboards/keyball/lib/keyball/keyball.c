@@ -249,13 +249,13 @@ __attribute__((weak)) void keyball_on_apply_motion_to_mouse_scroll(keyball_motio
 }
 
 
- static void motion_to_mouse(keyball_motion_t *m, report_mouse_t *r, bool is_left, bool as_scroll) {
-    if (as_scroll) {
-        keyball_on_apply_motion_to_mouse_scroll(m, r, is_left);
-    } else {
-        keyball_on_apply_motion_to_mouse_move(m, r, is_left);
-    }
-}
+//  static void motion_to_mouse(keyball_motion_t *m, report_mouse_t *r, bool is_left, bool as_scroll) {
+//     if (as_scroll) {
+//         keyball_on_apply_motion_to_mouse_scroll(m, r, is_left);
+//     } else {
+//         keyball_on_apply_motion_to_mouse_move(m, r, is_left);
+//     }
+// }
 
 
 static inline bool should_report(void) {
@@ -281,31 +281,31 @@ static inline bool should_report(void) {
 
 /////////// new code
 
-report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
-  // if (is_keyboard_master()) return mouse_report;
+// report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
+//    if (is_keyboard_master()) return mouse_report;
 
-    if (keyball.this_have_ball) {
-         pmw33xx_report_t report    = pmw33xx_read_burst(0);
-        //if (pmw3360_motion_burst(&d)) {
-            ATOMIC_BLOCK_FORCEON {
-                keyball.this_motion.x = add16(keyball.this_motion.x, report.delta_x);
-                keyball.this_motion.y = add16(keyball.this_motion.y, report.delta_y);
-            }
-        //}
-    }
-    else {
-        // report mouse event, if keyboard is primary.
-        if (is_keyboard_master() && should_report()) {
-            // modify mouse report by PMW3360 motion.
-            motion_to_mouse(&keyball.this_motion, &mouse_report, is_keyboard_left(), keyball.scroll_mode);
-            motion_to_mouse(&keyball.that_motion, &mouse_report, !is_keyboard_left(), keyball.scroll_mode ^ keyball.this_have_ball);
-            //store mouse report for OLED.
-            keyball.last_mouse = mouse_report;
-        }
-    }
-    return mouse_report;
+//     if (keyball.this_have_ball) {
+//          pmw33xx_report_t report    = pmw33xx_read_burst(0);
+//         //if (pmw3360_motion_burst(&d)) {
+//             ATOMIC_BLOCK_FORCEON {
+//                 keyball.this_motion.x = add16(keyball.this_motion.x, report.delta_x);
+//                 keyball.this_motion.y = add16(keyball.this_motion.y, report.delta_y);
+//             }
+//         //}
+//     }
+//     else {
+//         // report mouse event, if keyboard is primary.
+//         if (is_keyboard_master() && should_report()) {
+//             // modify mouse report by PMW3360 motion.
+//             motion_to_mouse(&keyball.this_motion, &mouse_report, is_keyboard_left(), keyball.scroll_mode);
+//             motion_to_mouse(&keyball.that_motion, &mouse_report, !is_keyboard_left(), keyball.scroll_mode ^ keyball.this_have_ball);
+//             //store mouse report for OLED.
+//             keyball.last_mouse = mouse_report;
+//         }
+//     }
+//     return mouse_report;
 
-}
+// }
 
 
 

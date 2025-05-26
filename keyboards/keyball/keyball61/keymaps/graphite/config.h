@@ -61,3 +61,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MOUSE_EXTENDED_REPORT
 
 #define RGBLIGHT_SLEEP
+
+//#define MACCEL_ENABLE
+
+#define MACCEL_TAKEOFF 2.0      // lower/higher value = curve takes off more smoothly/abruptly
+#define MACCEL_GROWTH_RATE 0.25 // lower/higher value = curve reaches its upper limit slower/faster
+#define MACCEL_OFFSET 2.2       // lower/higher value = acceleration kicks in earlier/later
+#define MACCEL_LIMIT 0.2        // lower limit of accel curve (minimum acceleration factor)
+
+#define MACCEL_USE_KEYCODES
+
+//#define MACCEL_DEBUG
+
