@@ -183,10 +183,10 @@ __attribute__((weak)) void keyball_on_apply_motion_to_mouse_move(keyball_motion_
 #if KEYBALL_MODEL == 61 || KEYBALL_MODEL == 39 || KEYBALL_MODEL == 147 || KEYBALL_MODEL == 44
     r->x = clip2int8(m->y);
     r->y = clip2int8(m->x);
-    if (is_left) {
-        r->x = -r->x;
-        r->y = -r->y;
-    }
+    // if (is_left) {
+    //     r->x = -r->x;
+    //     r->y = -r->y;
+    // }
 #elif KEYBALL_MODEL == 46
     r->x = clip2int8(m->x);
     r->y = -clip2int8(m->y);
@@ -249,13 +249,13 @@ __attribute__((weak)) void keyball_on_apply_motion_to_mouse_scroll(keyball_motio
 }
 
 
-// static void motion_to_mouse(keyball_motion_t *m, report_mouse_t *r, bool is_left, bool as_scroll) {
-//     if (as_scroll) {
-//         keyball_on_apply_motion_to_mouse_scroll(m, r, is_left);
-//     } else {
-//         keyball_on_apply_motion_to_mouse_move(m, r, is_left);
-//     }
-// }
+ static void motion_to_mouse(keyball_motion_t *m, report_mouse_t *r, bool is_left, bool as_scroll) {
+    if (as_scroll) {
+        keyball_on_apply_motion_to_mouse_scroll(m, r, is_left);
+    } else {
+        keyball_on_apply_motion_to_mouse_move(m, r, is_left);
+    }
+}
 
 
 static inline bool should_report(void) {
@@ -282,21 +282,26 @@ static inline bool should_report(void) {
 /////////// new code
 
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
-    if (!is_keyboard_master()) return mouse_report;
+  // if (is_keyboard_master()) return mouse_report;
 
     if (keyball.this_have_ball) {
+         pmw33xx_report_t report    = pmw33xx_read_burst(0);
+        //if (pmw3360_motion_burst(&d)) {
             ATOMIC_BLOCK_FORCEON {
-                keyball.this_motion.x = add16(keyball.this_motion.x, mouse_report.x);
-                keyball.this_motion.y = add16(keyball.this_motion.y, mouse_report.y);
+                keyball.this_motion.x = add16(keyball.this_motion.x, report.delta_x);
+                keyball.this_motion.y = add16(keyball.this_motion.y, report.delta_y);
             }
+        //}
     }
-    // report mouse event, if keyboard is primary.
-    if (is_keyboard_master() && should_report()) {
-        // modify mouse report by PMW3360 motion.
-        // motion_to_mouse(&keyball.this_motion, &mouse_report, is_keyboard_left(), keyball.scroll_mode);
-        // motion_to_mouse(&keyball.that_motion, &mouse_report, !is_keyboard_left(), keyball.scroll_mode ^ keyball.this_have_ball);
-        // store mouse report for OLED.
-        keyball.last_mouse = mouse_report;
+    else {
+        // report mouse event, if keyboard is primary.
+        if (is_keyboard_master() && should_report()) {
+            // modify mouse report by PMW3360 motion.
+            motion_to_mouse(&keyball.this_motion, &mouse_report, is_keyboard_left(), keyball.scroll_mode);
+            motion_to_mouse(&keyball.that_motion, &mouse_report, !is_keyboard_left(), keyball.scroll_mode ^ keyball.this_have_ball);
+            //store mouse report for OLED.
+            keyball.last_mouse = mouse_report;
+        }
     }
     return mouse_report;
 
@@ -400,20 +405,22 @@ static void rpc_get_motion_invoke(void) {
     if (transaction_rpc_exec(KEYBALL_GET_MOTION, 0, NULL, sizeof(recv), &recv)) {
         keyball.that_motion.x = add16(keyball.that_motion.x, recv.x);
         keyball.that_motion.y = add16(keyball.that_motion.y, recv.y);
+        dprintf("rcv x: %d, %d   ", recv.x, recv.y);
+        dprintf("mot x: %d, %d \n", keyball.that_motion.x, keyball.that_motion.y);
     }
     last_sync = now;
     return;
 }
 
 static void rpc_set_cpi_handler(uint8_t in_buflen, const void *in_data, uint8_t out_buflen, void *out_data) {
-    keyball_set_cpi(*(keyball_cpi_t *)in_data);
+    keyball_set_cpi((*(keyball_cpi_t *)in_data) * 100);
 }
 
 static void rpc_set_cpi_invoke(void) {
     if (!keyball.cpi_changed) {
         return;
     }
-    keyball_cpi_t req = keyball.cpi_value;
+    keyball_cpi_t req = keyball.cpi_value / 100;
     if (!transaction_rpc_send(KEYBALL_SET_CPI, sizeof(req), &req)) {
         return;
     }
