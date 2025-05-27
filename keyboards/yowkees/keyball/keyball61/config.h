@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // it has been reported to work well in such cases.
 //#define SPLIT_WATCHDOG_ENABLE
 
-#define SPLIT_TRANSACTION_IDS_KB KEYBALL_GET_INFO, KEYBALL_GET_MOTION, KEYBALL_SET_CPI
+//#define SPLIT_TRANSACTION_IDS_KB KEYBALL_GET_INFO, KEYBALL_GET_MOTION, KEYBALL_SET_CPI
 
 // RGB LED settings
 #ifdef RGBLIGHT_ENABLE
@@ -82,7 +82,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPI_MISO_PIN B3
 
 #define SPLIT_POINTING_ENABLE
-#define POINTING_DEVICE_LEFT
 
 #define POINTING_DEVICE_ROTATION_90
 #define POINTING_DEVICE_INVERT_Y

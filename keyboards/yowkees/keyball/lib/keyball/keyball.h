@@ -163,8 +163,8 @@ typedef struct {
     keyball_motion_t this_motion;
     keyball_motion_t that_motion;
 
-    uint8_t cpi_value;
-    bool    cpi_changed;
+    uint16_t cpi_value;
+//    bool    cpi_changed;
 
     bool     scroll_mode;
     uint32_t scroll_mode_changed;

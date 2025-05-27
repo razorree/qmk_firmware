@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef POINTING_DEVICE_ENABLE
 
 const uint16_t CPI_STEP       = PMW33XX_CPI_STEP;
+const uint16_t CPI_MIN        = PMW33XX_CPI_MIN;
+const uint16_t CPI_MAX        = PMW33XX_CPI_MAX;
 
 #endif
 
@@ -51,7 +53,7 @@ keyball_t keyball = {
     .that_motion = {0},
 
     .cpi_value   = 0,
-    .cpi_changed = false,
+ //   .cpi_changed = false,
 
     .scroll_mode = false,
     .scroll_div  = 0,
@@ -321,6 +323,8 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t rep) {
 //////////////////////////////////////////////////////////////////////////////
 // Split RPC
 
+
+ /*
 #ifdef SPLIT_KEYBOARD
  #ifdef POINTING_DEVICE_ENABLE
 
@@ -412,6 +416,7 @@ static void rpc_set_cpi_invoke(void) {
 
 #endif
 #endif
+*/
 
 //////////////////////////////////////////////////////////////////////////////
 // OLED utility
@@ -593,12 +598,24 @@ uint16_t keyball_get_cpi(void) {
 }
 
 void keyball_set_cpi(uint16_t cpi) {
-    keyball.cpi_value   = cpi;
-    keyball.cpi_changed = true;
-    if (keyball.this_have_ball) {
-        pmw33xx_set_cpi_wrapper(cpi == 0 ? CPI_DEFAULT : cpi);
-        keyball.cpi_value = pmw33xx_get_cpi_wrapper();
+    if (cpi < CPI_MIN) {
+        cpi = CPI_MIN;
     }
+    else if (cpi > CPI_MAX) {
+        cpi = CPI_MAX;
+    }
+    dprintf("1 pointing_device_get_cpi: %d\n", pointing_device_get_cpi());
+
+    dprintf("2 set_spi: %d\n", cpi);
+ //   keyball.cpi_changed = true;
+    pointing_device_set_cpi(cpi);
+    keyball.cpi_value = pointing_device_get_cpi();
+    dprintf("3 pointing_device_get_cpi: %d\n", keyball.cpi_value);
+
+    // if (keyball.this_have_ball) {
+    //     pmw33xx_set_cpi_wrapper(cpi == 0 ? CPI_DEFAULT : cpi);
+    //     keyball.cpi_value = pmw33xx_get_cpi_wrapper();
+    // }
 }
 
 #endif
@@ -608,19 +625,19 @@ void keyball_set_cpi(uint16_t cpi) {
 
 void keyboard_post_init_kb(void) {
 #ifdef POINTING_DEVICE_ENABLE
-    #ifdef SPLIT_KEYBOARD
-        // register transaction handlers on secondary.
-        if (!is_keyboard_master()) {
-            transaction_register_rpc(KEYBALL_GET_INFO, rpc_get_info_handler);
-            transaction_register_rpc(KEYBALL_GET_MOTION, rpc_get_motion_handler);
-            transaction_register_rpc(KEYBALL_SET_CPI, rpc_set_cpi_handler);
-        }
-    #endif
+    // #ifdef SPLIT_KEYBOARD
+    //     // register transaction handlers on secondary.
+    //     if (!is_keyboard_master()) {
+    //         transaction_register_rpc(KEYBALL_GET_INFO, rpc_get_info_handler);
+    //         transaction_register_rpc(KEYBALL_GET_MOTION, rpc_get_motion_handler);
+    //         transaction_register_rpc(KEYBALL_SET_CPI, rpc_set_cpi_handler);
+    //     }
+    // #endif
 
         // read keyball configuration from EEPROM
         if (eeconfig_is_enabled()) {
             keyball_config_t c = {.raw = eeconfig_read_kb()};
-            keyball_set_cpi(c.cpi);
+            keyball_set_cpi(c.cpi*100);
             keyball_set_scroll_div(c.sdiv);
     #ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
             set_auto_mouse_enable(c.amle);
@@ -636,20 +653,20 @@ void keyboard_post_init_kb(void) {
     keyboard_post_init_user();
 }
 
-#if SPLIT_KEYBOARD
- #ifdef POINTING_DEVICE_ENABLE
+// #if SPLIT_KEYBOARD
+//  #ifdef POINTING_DEVICE_ENABLE
 
-void housekeeping_task_kb(void) {
-    if (is_keyboard_master() && 1 == 2) {
-        rpc_get_info_invoke();
-        if (keyball.that_have_ball) {
-            rpc_get_motion_invoke();
-            rpc_set_cpi_invoke();
-        }
-    }
-}
-#endif
-#endif
+// void housekeeping_task_kb(void) {
+//     if (is_keyboard_master() && 1 == 2) {
+//         rpc_get_info_invoke();
+//         if (keyball.that_have_ball) {
+//             rpc_get_motion_invoke();
+//             rpc_set_cpi_invoke();
+//         }
+//     }
+// }
+// #endif
+// #endif
 
 static void pressing_keys_update(uint16_t keycode, keyrecord_t *record) {
 
@@ -737,7 +754,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 break;
             case KBC_SAVE: {
                 keyball_config_t c = {
-                    .cpi   = keyball.cpi_value,
+                    .cpi   = (keyball.cpi_value+1)/100,
                     .sdiv  = keyball.scroll_div,
 #ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
                     .amle  = get_auto_mouse_enable(),
