@@ -8,6 +8,9 @@
     },
     "manufacturer": "Yowkees",
     "keyboard_name": "Keyball61",
+    "build": {
+        "lto": true
+    },
     "rgblight": {
         "driver": "ws2812"
     },
