@@ -83,7 +83,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     SSNP_VRT , _______  , KC_7     , KC_8     , KC_9     , _______  ,                                  KC_PGUP,     KC_HOME,    KC_UP,      KC_END,     KC_INS,     KC_F12,
     SSNP_HOR , _______  , KC_4     , KC_5     , KC_6     ,S(KC_SCLN),                                  KC_PGDN,     KC_LEFT,    KC_DOWN,    KC_RGHT,    KC_DEL,     XXXXXXX,
     _______  , _______  , KC_BTN1  , KC_BTN3  , KC_BTN2  ,S(KC_MINS), S(KC_8)  ,            S(KC_9)  , KC_PGDN  ,   C(KC_LEFT), _______ ,   C(KC_RGHT), _______  ,  _______  ,
-    _______  , _______  , _______  , _______  , _______  , _______  , _______  ,             KC_DEL  , _______  ,   _______  ,  _______  ,  _______  ,  _______  ,  _______
+    _______  , SCRL_MO  , _______  , _______  , _______  , _______  , _______  ,             KC_DEL  , _______  ,   _______  ,  _______  ,  _______  ,  _______  ,  _______
   ),
 
   [3] = LAYOUT_universal(

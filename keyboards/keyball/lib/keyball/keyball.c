@@ -338,6 +338,33 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t rep) {
 }
 */
 
+int16_t scroll_accumulated_h = 0;
+int16_t scroll_accumulated_v = 0;
+
+report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
+
+
+   // if (is_keyboard_master() && should_report())
+    {
+
+        if (keyball.scroll_mode) {
+            int16_t div = 1 << (keyball_get_scroll_div() - 1);
+            scroll_accumulated_h += mouse_report.x;
+            scroll_accumulated_v += mouse_report.y;
+
+            mouse_report.h = divmod16(&scroll_accumulated_h, div);
+            mouse_report.v = -divmod16(&scroll_accumulated_v, div);
+            mouse_report.x = 0;
+            mouse_report.y = 0;
+        }
+            //store mouse report for OLED.
+            keyball.last_mouse = mouse_report;
+   }
+   return pointing_device_task_user(mouse_report);
+
+}
+
+
 //////////////////////////////////////////////////////////////////////////////
 // Split RPC
 
