@@ -1,5 +1,0 @@
-RGBLIGHT_ENABLE = yes
-
-OLED_ENABLE = yes
-
-CONSOLE_ENABLE = yes
