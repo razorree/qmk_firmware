@@ -159,19 +159,12 @@ void pointing_device_init_kb(void) {
 
 
 __attribute__((weak)) void keyball_on_apply_motion_to_mouse_move(keyball_motion_t *m, report_mouse_t *r, bool is_left) {
-#if KEYBALL_MODEL == 61 || KEYBALL_MODEL == 39 || KEYBALL_MODEL == 147 || KEYBALL_MODEL == 44
     r->x = clip2int8(m->y);
     r->y = clip2int8(m->x);
     if (is_left) {
         r->x = -r->x;
         r->y = -r->y;
     }
-#elif KEYBALL_MODEL == 46
-    r->x = clip2int8(m->x);
-    r->y = -clip2int8(m->y);
-#else
-#    error("unknown Keyball model")
-#endif
     // clear motion
     m->x = 0;
     m->y = 0;
@@ -184,19 +177,12 @@ __attribute__((weak)) void keyball_on_apply_motion_to_mouse_scroll(keyball_motio
     int16_t y = divmod16(&m->y, div);
 
     // apply to mouse report.
-#if KEYBALL_MODEL == 61 || KEYBALL_MODEL == 39 || KEYBALL_MODEL == 147 || KEYBALL_MODEL == 44
     r->h = clip2int8(y);
     r->v = -clip2int8(x);
     if (is_left) {
         r->h = -r->h;
         r->v = -r->v;
     }
-#elif KEYBALL_MODEL == 46
-    r->h = clip2int8(x);
-    r->v = clip2int8(y);
-#else
-#    error("unknown Keyball model")
-#endif
 
     // Scroll snapping
 #if KEYBALL_SCROLLSNAP_ENABLE == 1
