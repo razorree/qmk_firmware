@@ -39,3 +39,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define AUTO_MOUSE_DEFAULT_LAYER 2
 
 #define POINTING_DEVICE_LEFT
+#define POINTING_DEVICE_ROTATION_90
+#define POINTING_DEVICE_INVERT_Y

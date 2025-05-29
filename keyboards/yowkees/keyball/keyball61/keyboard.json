@@ -30,7 +30,7 @@
         "enabled": true
     },
     "layout_aliases": {
-        "LAYOUT": "LAYOUT_right_ball",
+        "LAYOUT": "LAYOUT_left_ball",
         "LAYOUT_universal": "LAYOUT_no_ball"
     },
     "layouts": {

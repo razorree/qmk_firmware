@@ -53,7 +53,6 @@ keyball_t keyball = {
     .that_motion = {0},
 
     .cpi_value   = 0,
- //   .cpi_changed = false,
 
     .scroll_mode = false,
     .scroll_div  = 0,
@@ -71,6 +70,7 @@ __attribute__((weak)) void keyball_on_adjust_layout(keyball_adjust_t v) {}
 
 #ifdef POINTING_DEVICE_ENABLE
 
+/*
 // add16 adds two int16_t with clipping.
 static int16_t add16(int16_t a, int16_t b) {
     int16_t r = a + b;
@@ -82,7 +82,7 @@ static int16_t add16(int16_t a, int16_t b) {
     return r;
 }
 
-
+*/
 // divmod16 divides *v by div, returns the quotient, and assigns the remainder
 // to *v.
 static int16_t divmod16(int16_t *v, int16_t div) {
@@ -90,6 +90,8 @@ static int16_t divmod16(int16_t *v, int16_t div) {
     *v -= r * div;
     return r;
 }
+
+
 #endif
 // clip2int8 clips an integer fit into int8_t.
 static inline int8_t clip2int8(int16_t v) {
@@ -146,16 +148,10 @@ static void add_scroll_div(int8_t delta) {
 //////////////////////////////////////////////////////////////////////////////
 // Pointing device driver
 
-#if KEYBALL_MODEL == 46
-void keyboard_pre_init_kb(void) {
-    keyball.this_have_ball = pmw3360_init();
-    keyboard_pre_init_user();
-}
-#endif
-
 
 #ifdef POINTING_DEVICE_ENABLE
 
+/*
 void pointing_device_init_kb(void) {
     keyball.this_have_ball = pmw33xx_init(0);
     pointing_device_init_user();
@@ -261,6 +257,7 @@ static inline bool should_report(void) {
     return true;
 }
 
+
 /////////// new code
 
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
@@ -289,7 +286,55 @@ report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
 
 }
 
+*/
 
+static inline bool should_report(void) {
+    uint32_t now = timer_read32();
+#if defined(KEYBALL_REPORTMOUSE_INTERVAL) && KEYBALL_REPORTMOUSE_INTERVAL > 0
+    // throttling mouse report rate.
+    static uint32_t last = 0;
+    if (TIMER_DIFF_32(now, last) < KEYBALL_REPORTMOUSE_INTERVAL) {
+        return false;
+    }
+    last = now;
+#endif
+// #if defined(KEYBALL_SCROLLBALL_INHIVITOR) && KEYBALL_SCROLLBALL_INHIVITOR > 0
+//     if (TIMER_DIFF_32(now, keyball.scroll_mode_changed) < KEYBALL_SCROLLBALL_INHIVITOR) {
+//         keyball.this_motion.x = 0;
+//         keyball.this_motion.y = 0;
+//         keyball.that_motion.x = 0;
+//         keyball.that_motion.y = 0;
+//     }
+// #endif
+    return true;
+}
+
+
+int16_t scroll_accumulated_h = 0;
+int16_t scroll_accumulated_v = 0;
+
+report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
+
+
+   // if (is_keyboard_master() && should_report())
+    {
+
+        if (keyball.scroll_mode) {
+            int16_t div = 1 << (keyball_get_scroll_div() - 1);
+            scroll_accumulated_h += mouse_report.x;
+            scroll_accumulated_v += mouse_report.y;
+
+            mouse_report.h = divmod16(&scroll_accumulated_h, div);
+            mouse_report.v = -divmod16(&scroll_accumulated_v, div);
+            mouse_report.x = 0;
+            mouse_report.y = 0;
+        }
+            //store mouse report for OLED.
+            keyball.last_mouse = mouse_report;
+   }
+    return mouse_report;
+
+}
 
 #endif
 

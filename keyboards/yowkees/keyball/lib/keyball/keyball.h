@@ -126,7 +126,7 @@ enum keyball_keycodes {
 typedef union {
     uint32_t raw;
     struct {
-        uint8_t cpi : 7;
+        uint8_t cpi : 7;   // CPI divided by 100
         uint8_t sdiv : 3;  // scroll divider
 #ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
         uint8_t amle : 1;  // automatic mouse layer enabled
@@ -164,7 +164,6 @@ typedef struct {
     keyball_motion_t that_motion;
 
     uint16_t cpi_value;
-//    bool    cpi_changed;
 
     bool     scroll_mode;
     uint32_t scroll_mode_changed;
@@ -260,17 +259,9 @@ uint8_t keyball_get_scroll_div(void);
 void keyball_set_scroll_div(uint8_t div);
 
 /// keyball_get_cpi gets current CPI of trackball.
-/// The actual CPI value is the returned value +1 and multiplied by 100:
-///
-///     CPI = (v + 1) * 100
 uint16_t keyball_get_cpi(void);
 
 /// keyball_set_cpi changes CPI of trackball.
-/// Valid values are between 0 to 119, and the actual CPI value is the set
-/// value +1 and multiplied by 100:
-///
-///     CPI = (v + 1) * 100
-///
-/// In addition, if you do not upload SROM, the maximum value will be limited
-/// to 34 (3500CPI).
+/// Valid values are between 100 to 12500.
+/// In addition, if you do not upload SROM, the maximum value will be limited 3500CPI.
 void keyball_set_cpi(uint16_t cpi);

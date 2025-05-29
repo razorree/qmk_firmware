@@ -82,6 +82,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPI_MISO_PIN B3
 
 #define SPLIT_POINTING_ENABLE
-
-#define POINTING_DEVICE_ROTATION_90
-#define POINTING_DEVICE_INVERT_Y
+//#define MOUSE_EXTENDED_REPORT
